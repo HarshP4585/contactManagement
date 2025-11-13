@@ -41,3 +41,21 @@ export interface JwtPayload {
   email: string;
   role_id: number;
 }
+
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  sortBy?: 'created_at' | 'name';
+  order?: 'ASC' | 'DESC';
+  search?: string;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}

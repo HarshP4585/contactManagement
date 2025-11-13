@@ -50,5 +50,21 @@ export interface ApiResponse<T> {
   message: string;
   data?: T;
   count?: number;
+  pagination?: PaginationMeta;
   error?: string;
+}
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  sortBy?: 'created_at' | 'name' | 'email';
+  order?: 'ASC' | 'DESC';
+  search?: string;
 }

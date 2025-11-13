@@ -8,19 +8,26 @@ import { Button, Modal, Alert } from '@/components/ui';
 import { ContactsTable } from '@/components/contacts/ContactsTable';
 import { ContactForm } from '@/components/contacts/ContactForm';
 import { contactsApi } from '@/lib/api/contacts';
-import { Contact, ContactFormData } from '@/types';
+import { Contact, ContactFormData, PaginationMeta } from '@/types';
 
 export default function ContactsPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta>({
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sortBy, setSortBy] = useState<'created_at' | 'name'>('created_at');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -33,17 +40,37 @@ export default function ContactsPage() {
     }
   }, [isAuthenticated, authLoading, router]);
 
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      // Reset to page 1 when search changes
+      if (searchTerm !== debouncedSearch) {
+        setPagination({ ...pagination, page: 1 });
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchContacts();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, pagination.page, sortBy, sortOrder, debouncedSearch]);
 
   const fetchContacts = async () => {
     try {
       setLoading(true);
-      const data = await contactsApi.getAll();
-      setContacts(data);
+      const result = await contactsApi.getAll({
+        page: pagination.page,
+        limit: pagination.limit,
+        sortBy,
+        order: sortOrder,
+        search: debouncedSearch,
+      });
+      setContacts(result.data);
+      setPagination(result.pagination);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch contacts');
     } finally {
@@ -51,41 +78,24 @@ export default function ContactsPage() {
     }
   };
 
-  // Client-side filtering based on search term
-  const filteredContacts = contacts.filter((contact) => {
-    if (!searchTerm) return true;
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      contact.name.toLowerCase().includes(searchLower) ||
-      contact.email.toLowerCase().includes(searchLower)
-    );
-  });
-
-  // Sort contacts based on sortBy field
-  const sortedContacts = [...filteredContacts].sort((a, b) => {
-    if (sortBy === 'name') {
-      const nameA = a.name.toLowerCase();
-      const nameB = b.name.toLowerCase();
-
-      if (sortOrder === 'asc') {
-        return nameA.localeCompare(nameB);
-      } else {
-        return nameB.localeCompare(nameA);
-      }
-    }
-    // For 'created_at' or default, maintain the original order from API
-    return 0;
-  });
+  // No client-side filtering needed - search is now server-side
+  const filteredContacts = contacts;
 
   const handleSortByName = () => {
     if (sortBy === 'name') {
       // If already sorting by name, toggle the order
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === 'ASC' ? 'DESC' : 'ASC');
     } else {
       // If switching to name sort, default to ascending
       setSortBy('name');
-      setSortOrder('asc');
+      setSortOrder('ASC');
+      setPagination({ ...pagination, page: 1 }); // Reset to first page on sort change
     }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPagination({ ...pagination, page: newPage });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCreateContact = async (data: ContactFormData | FormData) => {
@@ -138,7 +148,7 @@ export default function ContactsPage() {
     const headers = ['Name', 'Email', 'Phone', 'Owner', 'Created At'];
 
     // Convert contacts to CSV rows
-    const rows = sortedContacts.map((contact) => {
+    const rows = filteredContacts.map((contact) => {
       const owner = (contact as any).first_name
         ? `${(contact as any).first_name} ${(contact as any).last_name}`
         : 'You';
@@ -196,9 +206,9 @@ export default function ContactsPage() {
               {user?.role_id === 1 ? 'All Contacts' : 'My Contacts'}
             </h1>
             <p className="text-gray-600 mt-1">
-              {searchTerm && sortedContacts.length !== contacts.length
-                ? `${sortedContacts.length} of ${contacts.length} ${contacts.length === 1 ? 'contact' : 'contacts'}`
-                : `${contacts.length} ${contacts.length === 1 ? 'contact' : 'contacts'}`}
+              {debouncedSearch
+                ? `${pagination.total} ${pagination.total === 1 ? 'result' : 'results'} for "${debouncedSearch}"`
+                : `${pagination.total} ${pagination.total === 1 ? 'contact' : 'contacts'} total`}
             </p>
           </div>
           <div className="flex items-center space-x-3">
@@ -208,7 +218,7 @@ export default function ContactsPage() {
             <Button
               variant="outline"
               onClick={exportToCSV}
-              disabled={sortedContacts.length === 0}
+              disabled={filteredContacts.length === 0}
             >
               <div className="flex items-center">
                 <svg
@@ -263,7 +273,15 @@ export default function ContactsPage() {
                 </svg>
               </button>
             )}
+            {searchTerm && searchTerm !== debouncedSearch && (
+              <div className="absolute right-12 top-3.5">
+                <div className="animate-spin h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+              </div>
+            )}
           </div>
+          {searchTerm && searchTerm !== debouncedSearch && (
+            <p className="text-sm text-gray-500 mt-2">Searching...</p>
+          )}
         </div>
 
         {user?.role_id === 1 && (
@@ -288,16 +306,16 @@ export default function ContactsPage() {
           <div className="flex items-center justify-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
-        ) : sortedContacts.length === 0 ? (
+        ) : filteredContacts.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg shadow-md">
             <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            {searchTerm ? (
+            {debouncedSearch ? (
               <>
                 <h3 className="mt-2 text-lg font-medium text-gray-900">No contacts found</h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  No contacts match your search for &quot;{searchTerm}&quot;. Try a different search term.
+                  No contacts match your search for &quot;{debouncedSearch}&quot;. Try a different search term.
                 </p>
                 <div className="mt-6">
                   <Button variant="outline" onClick={() => setSearchTerm('')}>
@@ -319,14 +337,16 @@ export default function ContactsPage() {
           </div>
         ) : (
           <ContactsTable
-            contacts={sortedContacts}
+            contacts={filteredContacts}
             currentUserId={user?.id || 0}
             isAdmin={user?.role_id === 1}
             sortBy={sortBy}
             sortOrder={sortOrder}
+            pagination={pagination}
             onSort={handleSortByName}
             onEdit={openEditModal}
             onDelete={openDeleteModal}
+            onPageChange={handlePageChange}
           />
         )}
 

@@ -1,6 +1,6 @@
 import { AppDataSource } from '../db/data-source';
 import { Contact } from '../types/entities';
-import { CreateContactDto, UpdateContactDto } from '../types/dtos';
+import { CreateContactDto, UpdateContactDto, PaginationParams, PaginatedResponse } from '../types/dtos';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -73,34 +73,144 @@ export class ContactsUtils {
   }
 
   /**
-   * Get all contacts for a user
+   * Get all contacts for a user with pagination, sorting, and search
    */
-  static async getAllContacts(userId: number): Promise<Contact[]> {
-    const query = `
+  static async getAllContacts(
+    userId: number,
+    params: PaginationParams = {}
+  ): Promise<PaginatedResponse<Contact>> {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'created_at',
+      order = 'DESC',
+      search = '',
+    } = params;
+
+    // Validate sortBy field to prevent SQL injection
+    const allowedSortFields = ['created_at', 'name', 'email'];
+    const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'created_at';
+
+    // Validate order
+    const sortOrder = order === 'ASC' ? 'ASC' : 'DESC';
+
+    // Calculate offset
+    const offset = (page - 1) * limit;
+
+    // Build search condition
+    const searchCondition = search
+      ? `AND (LOWER(name) LIKE LOWER($2) OR LOWER(email) LIKE LOWER($2))`
+      : '';
+
+    const queryParams: any[] = [userId];
+    if (search) {
+      queryParams.push(`%${search}%`);
+    }
+
+    // Get total count
+    const countQuery = `
+      SELECT COUNT(*) as total
+      FROM "contacts"
+      WHERE user_id = $1 ${searchCondition}
+    `;
+    const countResult = await AppDataSource.query(countQuery, queryParams);
+    const total = parseInt(countResult[0].total);
+
+    // Get paginated data
+    const limitIndex = search ? 3 : 2;
+    const offsetIndex = search ? 4 : 3;
+    const dataQuery = `
       SELECT id, name, email, phone, photo, user_id, created_at, updated_at
       FROM "contacts"
-      WHERE user_id = $1
-      ORDER BY created_at DESC
+      WHERE user_id = $1 ${searchCondition}
+      ORDER BY ${sortField} ${sortOrder}
+      LIMIT $${limitIndex} OFFSET $${offsetIndex}
     `;
 
-    const result = await AppDataSource.query(query, [userId]);
-    return this.processContactsPhotos(result);
+    const dataParams = [...queryParams, limit, offset];
+    const result = await AppDataSource.query(dataQuery, dataParams);
+    const processedData = await this.processContactsPhotos(result);
+
+    return {
+      data: processedData,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   /**
-   * Get all contacts in the system (admin only)
+   * Get all contacts in the system (admin only) with pagination, sorting, and search
    */
-  static async getAllContactsForAdmin(): Promise<Contact[]> {
-    const query = `
+  static async getAllContactsForAdmin(
+    params: PaginationParams = {}
+  ): Promise<PaginatedResponse<Contact>> {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'created_at',
+      order = 'DESC',
+      search = '',
+    } = params;
+
+    // Validate sortBy field to prevent SQL injection
+    const allowedSortFields = ['created_at', 'name'];
+    const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'created_at';
+
+    // Validate order
+    const sortOrder = order === 'ASC' ? 'ASC' : 'DESC';
+
+    // Calculate offset
+    const offset = (page - 1) * limit;
+
+    // Build search condition
+    const searchCondition = search
+      ? `WHERE (LOWER(c.name) LIKE LOWER($1) OR LOWER(c.email) LIKE LOWER($1))`
+      : '';
+
+    const queryParams: any[] = [];
+    if (search) {
+      queryParams.push(`%${search}%`);
+    }
+
+    // Get total count
+    const countQuery = `
+      SELECT COUNT(*) as total
+      FROM "contacts" c
+      ${searchCondition}
+    `;
+    const countResult = await AppDataSource.query(countQuery, queryParams);
+    const total = parseInt(countResult[0].total);
+
+    // Get paginated data
+    const limitIndex = search ? 2 : 1;
+    const offsetIndex = search ? 3 : 2;
+    const dataQuery = `
       SELECT c.id, c.name, c.email, c.phone, c.photo, c.user_id, c.created_at, c.updated_at,
              u.first_name, u.last_name, u.email as owner_email
       FROM "contacts" c
       INNER JOIN "user" u ON c.user_id = u.id
-      ORDER BY c.created_at DESC
+      ${searchCondition}
+      ORDER BY c.${sortField} ${sortOrder}
+      LIMIT $${limitIndex} OFFSET $${offsetIndex}
     `;
 
-    const result = await AppDataSource.query(query);
-    return this.processContactsPhotos(result);
+    const dataParams = [...queryParams, limit, offset];
+    const result = await AppDataSource.query(dataQuery, dataParams);
+    const processedData = await this.processContactsPhotos(result);
+
+    return {
+      data: processedData,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   /**

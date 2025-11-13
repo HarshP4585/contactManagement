@@ -100,18 +100,37 @@ export class ContactsController {
         return;
       }
 
+      // Parse pagination, sorting, and search parameters from query string
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const sortBy = (req.query.sortBy as 'created_at' | 'name') || 'created_at';
+      const order = (req.query.order as 'ASC' | 'DESC') || 'DESC';
+      const search = (req.query.search as string) || '';
+
+      // Validate page and limit
+      const validatedPage = page > 0 ? page : 1;
+      const validatedLimit = limit > 0 && limit <= 100 ? limit : 10; // Max 100 items per page
+
+      const paginationParams = {
+        page: validatedPage,
+        limit: validatedLimit,
+        sortBy,
+        order,
+        search: search.trim(),
+      };
+
       // Check if user is admin (role_id === 1)
       const isAdmin = req.user.role_id === 1;
 
-      const contacts = isAdmin
-        ? await ContactsUtils.getAllContactsForAdmin()
-        : await ContactsUtils.getAllContacts(req.user.userId);
+      const result = isAdmin
+        ? await ContactsUtils.getAllContactsForAdmin(paginationParams)
+        : await ContactsUtils.getAllContacts(req.user.userId, paginationParams);
 
       res.status(200).json({
         success: true,
         message: 'Contacts retrieved successfully',
-        data: contacts,
-        count: contacts.length,
+        data: result.data,
+        pagination: result.pagination,
       });
     } catch (error) {
       console.error('Get contacts error:', error);
