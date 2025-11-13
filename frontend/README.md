@@ -72,7 +72,3 @@ NEXT_PUBLIC_API_URL=http://localhost:3002/api
 npm run build
 npm start
 ```
-
-## License
-
-ISC

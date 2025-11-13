@@ -180,7 +180,3 @@ npm run migration:run
 ```bash
 npm run migration:revert
 ```
-
-## License
-
-ISC
