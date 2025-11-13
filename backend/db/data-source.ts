@@ -12,7 +12,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD || 'postgres',
   database: process.env.DB_DATABASE || 'contact_management',
   synchronize: false, // Never use synchronize in production
-  logging: process.env.NODE_ENV === 'development',
+  logging: false,
   entities: [],
   migrations: [path.join(__dirname, './migrations/*{.ts,.js}')],
   subscribers: [],

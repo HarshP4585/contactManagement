@@ -146,7 +146,7 @@ export class AuthController {
       // Set refresh token as HTTP-only cookie
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        secure: true,
         sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });

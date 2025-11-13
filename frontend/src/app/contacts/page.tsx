@@ -88,7 +88,7 @@ export default function ContactsPage() {
     }
   };
 
-  const handleCreateContact = async (data: ContactFormData) => {
+  const handleCreateContact = async (data: ContactFormData | FormData) => {
     await contactsApi.create(data);
     setSuccess('Contact created successfully');
     setIsCreateModalOpen(false);
@@ -96,7 +96,7 @@ export default function ContactsPage() {
     setTimeout(() => setSuccess(''), 3000);
   };
 
-  const handleEditContact = async (data: ContactFormData) => {
+  const handleEditContact = async (data: ContactFormData | FormData) => {
     if (!selectedContact) return;
     await contactsApi.update(selectedContact.id, data);
     setSuccess('Contact updated successfully');

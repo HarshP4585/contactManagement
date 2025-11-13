@@ -10,7 +10,7 @@ dotenv.config();
 
 // Create Express app
 const app: Application = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 // Middleware
 app.use(express.json());
@@ -24,9 +24,8 @@ app.use('/photos', express.static('photos'));
 app.use((req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin;
   const allowedOrigins = [
-    'http://localhost:3001',
-    'http://127.0.0.1:3001',
-    process.env.FRONTEND_URL,
+    `http://localhost:${process.env.FRONTEND_PORT || 3001}`,
+    `http://127.0.0.1:${process.env.FRONTEND_PORT || 3001}`,
   ].filter(Boolean);
 
   if (origin && allowedOrigins.includes(origin)) {
@@ -85,7 +84,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({
     success: false,
     message: 'Internal server error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined,
+    error: err.message,
   });
 });
 

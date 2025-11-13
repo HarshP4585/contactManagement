@@ -5,10 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "npm run migration:run && node dist/index.js",
     "dev": "npm run migration:run && ts-node-dev --respawn --transpile-only index.ts",
-    "migration:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d db/data-source.ts",
-    "migration:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d db/data-source.ts"
+    "migration:run": "npx typeorm migration:run -d dist/db/data-source.js",
+    "migration:revert": "npx typeorm migration:revert -d dist/db/data-source.js"
   },
   "keywords": ["nestjs", "typeorm", "postgresql", "crud"],
   "author": "",
