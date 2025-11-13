@@ -1,5 +1,7 @@
-class CreateContactsTable1700000000002 {
-  async up(queryRunner) {
+import { MigrationInterface, QueryRunner } from 'typeorm';
+
+export class CreateContactsTable1763019928000 implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "contacts" (
         "id" SERIAL PRIMARY KEY,
@@ -26,11 +28,9 @@ class CreateContactsTable1700000000002 {
     `);
   }
 
-  async down(queryRunner) {
+  public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`DROP INDEX IF EXISTS "idx_contacts_email";`);
     await queryRunner.query(`DROP INDEX IF EXISTS "idx_contacts_user_id";`);
     await queryRunner.query(`DROP TABLE IF EXISTS "contacts" CASCADE;`);
   }
 }
-
-module.exports = { CreateContactsTable1700000000002 };

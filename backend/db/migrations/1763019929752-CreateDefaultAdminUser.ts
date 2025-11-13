@@ -1,7 +1,8 @@
-const bcrypt = require('bcrypt');
+import { MigrationInterface, QueryRunner } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
-class CreateDefaultAdminUser1700000000003 {
-  async up(queryRunner) {
+export class CreateDefaultAdminUser1763019929000 implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
     // Hash the default admin password
     const hashedPassword = await bcrypt.hash('admin123', 10);
 
@@ -12,10 +13,13 @@ class CreateDefaultAdminUser1700000000003 {
 
     // Only create if doesn't exist
     if (existingAdmin.length === 0) {
-      await queryRunner.query(`
+      await queryRunner.query(
+        `
         INSERT INTO "user" (first_name, last_name, email, password, role_id, is_active)
         VALUES ($1, $2, $3, $4, $5, $6)
-      `, ['Admin', 'User', 'admin@admin.com', hashedPassword, 1, true]);
+      `,
+        ['Admin', 'User', 'admin@admin.com', hashedPassword, 1, true]
+      );
 
       console.log('✅ Default admin user created:');
       console.log('   Email: admin@admin.com');
@@ -26,11 +30,9 @@ class CreateDefaultAdminUser1700000000003 {
     }
   }
 
-  async down(queryRunner) {
+  public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       DELETE FROM "user" WHERE email = 'admin@admin.com'
     `);
   }
 }
-
-module.exports = { CreateDefaultAdminUser1700000000003 };

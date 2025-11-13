@@ -1,5 +1,7 @@
-class CreateRoleTable1700000000000 {
-  async up(queryRunner) {
+import { MigrationInterface, QueryRunner } from 'typeorm';
+
+export class CreateRoleTable1763019926834 implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "role" (
         "id" SERIAL PRIMARY KEY,
@@ -18,9 +20,7 @@ class CreateRoleTable1700000000000 {
     `);
   }
 
-  async down(queryRunner) {
+  public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`DROP TABLE IF EXISTS "role" CASCADE;`);
   }
 }
-
-module.exports = { CreateRoleTable1700000000000 };

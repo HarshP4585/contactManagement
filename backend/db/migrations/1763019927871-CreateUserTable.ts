@@ -1,5 +1,7 @@
-class CreateUserTable1700000000001 {
-  async up(queryRunner) {
+import { MigrationInterface, QueryRunner } from 'typeorm';
+
+export class CreateUserTable1763019927000 implements MigrationInterface {
+  public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       CREATE TABLE IF NOT EXISTS "user" (
         "id" SERIAL PRIMARY KEY,
@@ -27,11 +29,9 @@ class CreateUserTable1700000000001 {
     `);
   }
 
-  async down(queryRunner) {
+  public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`DROP INDEX IF EXISTS "idx_user_role_id";`);
     await queryRunner.query(`DROP INDEX IF EXISTS "idx_user_email";`);
     await queryRunner.query(`DROP TABLE IF EXISTS "user" CASCADE;`);
   }
 }
-
-module.exports = { CreateUserTable1700000000001 };
