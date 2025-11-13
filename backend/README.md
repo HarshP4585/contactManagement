@@ -341,11 +341,62 @@ photo: <file>
 
 #### Get all contacts
 ```http
-GET /api/contacts
+GET /api/contacts?page=1&limit=10&sortBy=created_at&order=DESC&search=john
 Authorization: Bearer <token>
 ```
 
-**Admin users**: Returns all contacts from all users
+**Query Parameters:**
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Items per page, max 100 (default: 10)
+- `sortBy` (optional): Field to sort by - `created_at`, `name` (default: `created_at`)
+- `order` (optional): Sort order - `ASC`, `DESC` (default: `DESC`)
+- `search` (optional): Search term to filter by name or email (case-insensitive)
+
+**Examples:**
+```http
+# Get first page with default sorting
+GET /api/contacts
+
+# Get second page with 20 items per page
+GET /api/contacts?page=2&limit=20
+
+# Sort by name ascending
+GET /api/contacts?sortBy=name&order=ASC
+
+# Search for contacts containing "john"
+GET /api/contacts?search=john
+
+# Combined: Search and sort
+GET /api/contacts?search=john&sortBy=name&order=ASC&page=1&limit=10
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Contacts retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "phone": "+1234567890",
+      "photo": "data:image/jpeg;base64,...",
+      "user_id": 1,
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "pagination": {
+    "total": 100,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 10
+  }
+}
+```
+
+**Admin users**: Returns all contacts from all users (with owner information)
 **Regular users**: Returns only their own contacts
 
 #### Get a single contact

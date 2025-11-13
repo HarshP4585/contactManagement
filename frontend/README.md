@@ -8,6 +8,9 @@ A modern, responsive contact management application built with Next.js 14, TypeS
 - Automatic token refresh with HTTP-only cookies
 - Create, Read, Update, Delete contacts
 - Photo upload for contacts
+- **Server-side search** with 2-second debouncing (searches name and email)
+- **Pagination** with configurable items per page (default: 10)
+- **Sorting** by name or created date (ascending/descending)
 - Role-based access control (Admin/User)
 - Admin user management interface
 - Responsive design with Tailwind CSS
@@ -15,6 +18,7 @@ A modern, responsive contact management application built with Next.js 14, TypeS
 - Type-safe with TypeScript
 - Modern UI with smooth animations
 - Automatic request retry on token expiration
+- CSV export functionality
 
 ## Tech Stack
 
@@ -161,10 +165,42 @@ docker-compose up
 - `/auth/register` - Registration page (creates regular users only)
 
 ### Protected Pages (Require Authentication)
-- `/contacts` - Contacts list with create/edit/delete functionality
+- `/contacts` - Contacts list with:
+  - Paginated table with sortable columns
+  - Server-side search (2-second debounce)
+  - Create/edit/delete functionality
+  - Photo upload support
+  - CSV export
 
 ### Admin-Only Pages (Require Admin Role)
 - `/admin/users` - User management page for creating admin and regular users
+
+## Key Features
+
+### Pagination
+- **Default**: 10 contacts per page
+- **Configurable**: Can be changed in the code
+- **Smart pagination controls**:
+  - Mobile: Previous/Next buttons
+  - Desktop: Page numbers with ellipsis (e.g., 1 2 3 ... 10)
+- **Always visible footer**: Shows "Showing X to Y of Z results"
+- **Integrated in table**: Pagination controls are part of the table component
+
+### Search
+- **Server-side search**: Queries backend API (not client-side filtering)
+- **2-second debounce**: Waits 2 seconds after typing stops before searching
+- **Visual feedback**:
+  - Spinner while debouncing
+  - "Searching..." text
+- **Searches**: Name and email fields (case-insensitive)
+- **Results**: Displays total results for search term
+- **Clear button**: X icon to instantly clear search
+
+### Sorting
+- **Default**: Created date (newest first)
+- **Sortable column**: Name (click header to toggle ASC/DESC)
+- **Visual indicators**: Up/down arrows show current sort direction
+- **Resets pagination**: Goes to page 1 when sort changes
 
 ## Components
 
@@ -379,7 +415,16 @@ authApi.getCurrentUser()
 ### Contacts API (`lib/api/contacts.ts`)
 
 ```typescript
-// Get all contacts (filtered by role on backend)
+// Get all contacts with pagination, sorting, and search
+contactsApi.getAll({
+  page: 1,
+  limit: 10,
+  sortBy: 'created_at', // or 'name'
+  order: 'DESC',        // or 'ASC'
+  search: 'john'        // optional search term
+})
+
+// Get all contacts (with defaults)
 contactsApi.getAll()
 
 // Get single contact
@@ -394,6 +439,13 @@ contactsApi.update(id, formData)
 // Delete contact
 contactsApi.delete(id)
 ```
+
+**Pagination Parameters:**
+- `page` (optional): Page number, default: 1
+- `limit` (optional): Items per page, default: 10, max: 100
+- `sortBy` (optional): Sort field - `'created_at'` or `'name'`, default: `'created_at'`
+- `order` (optional): Sort order - `'ASC'` or `'DESC'`, default: `'DESC'`
+- `search` (optional): Search term for name/email filtering
 
 ## State Management
 
