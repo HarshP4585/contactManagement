@@ -11,12 +11,6 @@ A full-stack contact management system with authentication, pagination, search, 
 - Role-based access control (Admin/User)
 - CSV export
 
-## Tech Stack
-
-- **Backend**: Express + TypeScript + PostgreSQL + TypeORM
-- **Frontend**: Next.js 14 + TypeScript + Tailwind CSS
-- **Deployment**: Docker + Docker Compose
-
 ## Quick Start
 
 ### Prerequisites
@@ -27,7 +21,7 @@ A full-stack contact management system with authentication, pagination, search, 
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/HarshP4585/contactManagement
    cd Shift_Technologies_Assessment_Contact_Management_App
    ```
 
@@ -85,7 +79,3 @@ docker-compose logs -f
 
 - [Backend API Documentation](./backend/README.md)
 - [Frontend Documentation](./frontend/README.md)
-
-## License
-
-ISC
