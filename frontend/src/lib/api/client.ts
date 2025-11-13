@@ -26,6 +26,12 @@ class ApiClient {
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // If data is FormData, remove Content-Type header to let browser set it
+        if (config.data instanceof FormData) {
+          delete config.headers['Content-Type'];
+        }
+
         return config;
       },
       (error) => Promise.reject(error)
@@ -142,12 +148,12 @@ class ApiClient {
     return this.client.get<T>(url);
   }
 
-  public post<T>(url: string, data?: any) {
-    return this.client.post<T>(url, data);
+  public post<T>(url: string, data?: any, config?: any) {
+    return this.client.post<T>(url, data, config);
   }
 
-  public put<T>(url: string, data?: any) {
-    return this.client.put<T>(url, data);
+  public put<T>(url: string, data?: any, config?: any) {
+    return this.client.put<T>(url, data, config);
   }
 
   public delete<T>(url: string) {

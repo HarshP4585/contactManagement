@@ -18,7 +18,7 @@ export const contactsApi = {
     throw new Error(response.data.message || 'Failed to fetch contact');
   },
 
-  async create(data: ContactFormData): Promise<Contact> {
+  async create(data: ContactFormData | FormData): Promise<Contact> {
     const response = await apiClient.post<ApiResponse<Contact>>('/contacts', data);
     if (response.data.success && response.data.data) {
       return response.data.data;
@@ -26,7 +26,7 @@ export const contactsApi = {
     throw new Error(response.data.message || 'Failed to create contact');
   },
 
-  async update(id: number, data: Partial<ContactFormData>): Promise<Contact> {
+  async update(id: number, data: Partial<ContactFormData> | FormData): Promise<Contact> {
     const response = await apiClient.put<ApiResponse<Contact>>(`/contacts/${id}`, data);
     if (response.data.success && response.data.data) {
       return response.data.data;

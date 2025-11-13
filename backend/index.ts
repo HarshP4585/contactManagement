@@ -17,6 +17,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Serve uploaded photos as static files
+app.use('/photos', express.static('photos'));
+
 // CORS middleware - Allow credentials for cookie-based refresh tokens
 app.use((req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin;

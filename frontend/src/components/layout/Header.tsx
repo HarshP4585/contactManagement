@@ -2,11 +2,23 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui';
 
 export const Header: React.FC = () => {
   const { user, logout, isAuthenticated } = useAuth();
+  const pathname = usePathname();
+
+  const isActive = (path: string) => {
+    if (path === '/contacts') {
+      return pathname === '/contacts';
+    }
+    if (path === '/admin/users') {
+      return pathname.startsWith('/admin');
+    }
+    return pathname === path;
+  };
 
   return (
     <header className="bg-white shadow-sm">
@@ -20,14 +32,22 @@ export const Header: React.FC = () => {
               <div className="ml-10 flex items-baseline space-x-4">
                 <Link
                   href="/contacts"
-                  className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive('/contacts')
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                  }`}
                 >
                   Contacts
                 </Link>
                 {user?.role_id === 1 && (
                   <Link
                     href="/admin/users"
-                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive('/admin/users')
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                    }`}
                   >
                     Admin
                   </Link>

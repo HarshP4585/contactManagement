@@ -1,9 +1,12 @@
 import { Request, Response } from 'express';
 import { ContactsUtils } from '../utils/contacts.utils';
 import { CreateContactDto, UpdateContactDto } from '../types/dtos';
+import { AuthUtils } from '../utils/auth.utils';
+import { emailService } from '../services/email.service';
+import { RequestWithFile } from '../types/requestWithFile';
 
 export class ContactsController {
-  static async createContact(req: Request, res: Response): Promise<void> {
+  static async createContact(req: RequestWithFile, res: Response): Promise<void> {
     try {
       if (!req.user) {
         res.status(401).json({
@@ -13,7 +16,8 @@ export class ContactsController {
         return;
       }
 
-      const { name, email, phone, photo }: CreateContactDto = req.body;
+      const { name, email, phone }: CreateContactDto = req.body;
+      const photo = req.file ? `/photos/${req.file.filename}` : undefined;
 
       // Validation
       if (!name || !email || !phone) {
@@ -51,6 +55,25 @@ export class ContactsController {
         phone,
         photo,
       });
+
+      // Get user information to send email notification
+      const user = await AuthUtils.findUserById(req.user.userId);
+
+      if (user) {
+        // Send email notification to the owner (don't wait for it to complete)
+        emailService
+          .sendContactCreatedNotification(
+            user.email,
+            `${user.first_name} ${user.last_name}`,
+            contact.name,
+            contact.email,
+            contact.phone
+          )
+          .catch((error) => {
+            // Log error but don't fail the request
+            console.error('Failed to send email notification:', error);
+          });
+      }
 
       res.status(201).json({
         success: true,
@@ -150,7 +173,7 @@ export class ContactsController {
     }
   }
 
-  static async updateContact(req: Request, res: Response): Promise<void> {
+  static async updateContact(req: RequestWithFile, res: Response): Promise<void> {
     try {
       if (!req.user) {
         res.status(401).json({
@@ -181,7 +204,7 @@ export class ContactsController {
       }
 
       const updateData: UpdateContactDto = {};
-      const { name, email, phone, photo } = req.body;
+      const { name, email, phone } = req.body;
 
       if (name !== undefined) updateData.name = name;
       if (email !== undefined) {
@@ -208,7 +231,9 @@ export class ContactsController {
         }
         updateData.phone = phone;
       }
-      if (photo !== undefined) updateData.photo = photo;
+      if (req.file) {
+        updateData.photo = `/photos/${req.file.filename}`;
+      }
 
       if (Object.keys(updateData).length === 0) {
         res.status(400).json({

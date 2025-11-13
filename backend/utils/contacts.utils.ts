@@ -1,8 +1,55 @@
 import { AppDataSource } from '../db/data-source';
 import { Contact } from '../types/entities';
 import { CreateContactDto, UpdateContactDto } from '../types/dtos';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export class ContactsUtils {
+  /**
+   * Convert photo path to base64 data URL
+   */
+  private static async photoToBase64(photoPath: string | null): Promise<string | null> {
+    if (!photoPath) return null;
+
+    try {
+      // Remove leading slash if present to get relative path
+      const relativePath = photoPath.startsWith('/') ? photoPath.slice(1) : photoPath;
+      const fullPath = path.join(process.cwd(), relativePath);
+
+      // Check if file exists
+      if (!fs.existsSync(fullPath)) {
+        return null;
+      }
+
+      // Read file and convert to base64
+      const imageBuffer = fs.readFileSync(fullPath);
+      const base64Image = imageBuffer.toString('base64');
+
+      // Determine mime type from file extension
+      const ext = path.extname(fullPath).toLowerCase();
+      let mimeType = 'image/jpeg';
+      if (ext === '.png') mimeType = 'image/png';
+      else if (ext === '.jpg' || ext === '.jpeg') mimeType = 'image/jpeg';
+
+      return `data:${mimeType};base64,${base64Image}`;
+    } catch (error) {
+      console.error('Error converting photo to base64:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Process contacts array to convert photo paths to base64
+   */
+  private static async processContactsPhotos(contacts: Contact[]): Promise<Contact[]> {
+    return Promise.all(
+      contacts.map(async (contact) => ({
+        ...contact,
+        photo: await this.photoToBase64(contact.photo),
+      }))
+    );
+  }
+
   /**
    * Create a new contact
    */
@@ -21,7 +68,8 @@ export class ContactsUtils {
       userId,
     ]);
 
-    return result[0];
+    const processed = await this.processContactsPhotos([result[0]]);
+    return processed[0];
   }
 
   /**
@@ -36,7 +84,7 @@ export class ContactsUtils {
     `;
 
     const result = await AppDataSource.query(query, [userId]);
-    return result;
+    return this.processContactsPhotos(result);
   }
 
   /**
@@ -52,7 +100,7 @@ export class ContactsUtils {
     `;
 
     const result = await AppDataSource.query(query);
-    return result;
+    return this.processContactsPhotos(result);
   }
 
   /**
@@ -66,7 +114,10 @@ export class ContactsUtils {
     `;
 
     const result = await AppDataSource.query(query, [contactId, userId]);
-    return result[0] || null;
+    if (!result[0]) return null;
+
+    const processed = await this.processContactsPhotos([result[0]]);
+    return processed[0];
   }
 
   /**
@@ -82,7 +133,10 @@ export class ContactsUtils {
     `;
 
     const result = await AppDataSource.query(query, [contactId]);
-    return result[0] || null;
+    if (!result[0]) return null;
+
+    const processed = await this.processContactsPhotos([result[0]]);
+    return processed[0];
   }
 
   /**
@@ -100,7 +154,7 @@ export class ContactsUtils {
     const updates: string[] = [];
     const values: any[] = [];
 
-    updatableFields.forEach((field, index) => {
+    updatableFields.forEach((field) => {
       if (updateData[field] !== undefined) {
         updates.push(`${field} = $${values.length + 1}`);
         values.push(updateData[field]);
@@ -128,7 +182,10 @@ export class ContactsUtils {
     `;
 
     const result = await AppDataSource.query(query, values);
-    return result[0] || null;
+    if (!result[0]) return null;
+
+    const processed = await this.processContactsPhotos([result[0]]);
+    return processed[0];
   }
 
   /**
