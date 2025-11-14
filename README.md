@@ -94,3 +94,6 @@ docker-compose logs -f
 ### Theme toggle
 <img width="1470" height="877" alt="image" src="https://github.com/user-attachments/assets/dc9bafa1-92a0-4215-85d6-0e4d9e4938d0" />
 
+### Contact added email
+<img width="2156" height="1308" alt="image" src="https://github.com/user-attachments/assets/8849f72a-c190-4217-9d18-c7e64693b6d1" />
+
