@@ -2,8 +2,10 @@ import 'reflect-metadata';
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
+import swaggerUi from 'swagger-ui-express';
 import { initializeDatabase } from './db/data-source';
 import routes from './routes';
+import { swaggerSpec } from './swagger';
 
 // Load environment variables
 dotenv.config();
@@ -52,6 +54,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+// Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Mount API routes
 app.use('/api', routes);
 
@@ -61,6 +66,7 @@ app.get('/', (req: Request, res: Response) => {
     success: true,
     message: 'Contact Management API',
     version: '1.0.0',
+    documentation: 'http://localhost:3000/api-docs',
     endpoints: {
       auth: {
         register: 'POST /api/auth/register',
