@@ -22,7 +22,7 @@ A full-stack contact management system with authentication, pagination, search, 
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/HarshP4585/contactManagement
-   cd Shift_Technologies_Assessment_Contact_Management_App
+   cd contactManagement
    ```
 
 2. **Configure environment variables:**
