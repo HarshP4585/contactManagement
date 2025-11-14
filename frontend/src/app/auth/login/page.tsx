@@ -4,7 +4,6 @@ import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { Layout } from '@/components/layout/Layout';
 import { Button, Input, Card, CardHeader, CardTitle, CardContent, Alert } from '@/components/ui';
 
 export default function LoginPage() {
@@ -32,12 +31,11 @@ export default function LoginPage() {
   };
 
   return (
-    <Layout>
-      <div className="max-w-md mx-auto mt-12">
+    <div className="max-w-md mx-auto mt-12">
         <Card>
           <CardHeader>
             <CardTitle>Sign In</CardTitle>
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
               Enter your credentials to access your account
             </p>
           </CardHeader>
@@ -78,9 +76,9 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Don't have an account?{' '}
-                <Link href="/auth/register" className="text-blue-600 hover:text-blue-700 font-medium">
+                <Link href="/auth/register" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
                   Sign Up
                 </Link>
               </p>
@@ -88,6 +86,5 @@ export default function LoginPage() {
           </CardContent>
         </Card>
       </div>
-    </Layout>
   );
 }

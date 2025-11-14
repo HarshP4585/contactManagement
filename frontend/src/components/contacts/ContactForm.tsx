@@ -126,16 +126,16 @@ export const ContactForm: React.FC<ContactFormProps> = ({
         />
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Photo (optional)
           </label>
           <input
             type="file"
             accept="image/jpeg,image/jpg,image/png"
             onChange={handleFileChange}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300 dark:hover:file:bg-blue-800"
           />
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Accepts JPG, PNG. Max size: 5MB
           </p>
 
@@ -144,7 +144,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({
               <img
                 src={photoPreview}
                 alt="Photo preview"
-                className="h-20 w-20 rounded-full object-cover border-2 border-gray-200"
+                className="h-20 w-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
               />
             </div>
           )}

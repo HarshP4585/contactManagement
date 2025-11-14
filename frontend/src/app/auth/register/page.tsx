@@ -4,7 +4,6 @@ import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { Layout } from '@/components/layout/Layout';
 import { Button, Input, Card, CardHeader, CardTitle, CardContent, Alert } from '@/components/ui';
 
 export default function RegisterPage() {
@@ -60,12 +59,11 @@ export default function RegisterPage() {
   };
 
   return (
-    <Layout>
-      <div className="max-w-md mx-auto mt-12">
+    <div className="max-w-md mx-auto mt-12">
         <Card>
           <CardHeader>
             <CardTitle>Create Account</CardTitle>
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
               Sign up to start managing your contacts
             </p>
           </CardHeader>
@@ -140,10 +138,10 @@ export default function RegisterPage() {
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
+                        <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Already have an account?{' '}
-                <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-medium">
+                <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
                   Sign In
                 </Link>
               </p>
@@ -151,6 +149,5 @@ export default function RegisterPage() {
           </CardContent>
         </Card>
       </div>
-    </Layout>
   );
 }
