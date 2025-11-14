@@ -88,12 +88,6 @@ POST /api/auth/refresh
 Cookie: refresh_token=<token>
 ```
 
-#### Get Profile
-```http
-GET /api/auth/profile
-Authorization: Bearer <token>
-```
-
 ### Contacts (Authentication Required)
 
 #### Get All Contacts

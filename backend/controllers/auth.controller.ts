@@ -178,44 +178,6 @@ export class AuthController {
   }
 
   /**
-   * Get current user profile
-   * GET /auth/profile (requires authentication)
-   */
-  static async getProfile(req: Request, res: Response): Promise<void> {
-    try {
-      if (!req.user) {
-        res.status(401).json({
-          success: false,
-          message: 'Unauthorized',
-        });
-        return;
-      }
-
-      const user = await AuthUtils.getUserWithRole(req.user.userId);
-
-      if (!user) {
-        res.status(404).json({
-          success: false,
-          message: 'User not found',
-        });
-        return;
-      }
-
-      res.status(200).json({
-        success: true,
-        data: user,
-      });
-    } catch (error) {
-      console.error('Get profile error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Error fetching profile',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-    }
-  }
-
-  /**
    * Refresh access token using refresh token from cookie
    * POST /auth/refresh
    */
