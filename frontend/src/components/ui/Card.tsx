@@ -10,8 +10,8 @@ export const Card: React.FC<CardProps> = ({ children, className = '', hover = fa
   return (
     <div
       className={`
-        bg-white rounded-lg shadow-md p-6
-        ${hover ? 'hover:shadow-lg transition-shadow duration-200' : ''}
+        bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-700/10 p-6 border border-gray-200 dark:border-gray-700
+        ${hover ? 'hover:shadow-lg dark:hover:shadow-gray-700/20 transition-shadow duration-200' : ''}
         ${className}
       `}
     >
@@ -40,7 +40,7 @@ interface CardTitleProps {
 
 export const CardTitle: React.FC<CardTitleProps> = ({ children, className = '' }) => {
   return (
-    <h3 className={`text-xl font-semibold text-gray-900 ${className}`}>
+    <h3 className={`text-xl font-semibold text-gray-900 dark:text-gray-100 ${className}`}>
       {children}
     </h3>
   );

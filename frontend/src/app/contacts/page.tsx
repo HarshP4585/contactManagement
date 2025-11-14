@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Layout } from '@/components/layout/Layout';
 import { Button, Modal, Alert } from '@/components/ui';
 import { ContactsTable } from '@/components/contacts/ContactsTable';
 import { ContactForm } from '@/components/contacts/ContactForm';
@@ -186,26 +185,23 @@ export default function ContactsPage() {
 
   if (authLoading || !isAuthenticated) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">Loading...</p>
-          </div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout>
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
               {user?.role_id === 1 ? 'All Contacts' : 'My Contacts'}
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
               {debouncedSearch
                 ? `${pagination.total} ${pagination.total === 1 ? 'result' : 'results'} for "${debouncedSearch}"`
                 : `${pagination.total} ${pagination.total === 1 ? 'contact' : 'contacts'} total`}
@@ -248,10 +244,10 @@ export default function ContactsPage() {
               placeholder="Search contacts by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 pl-11 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 pl-11 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
             <svg
-              className="absolute left-3 top-3.5 h-5 w-5 text-gray-400"
+              className="absolute left-3 top-3.5 h-5 w-5 text-gray-400 dark:text-gray-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -266,7 +262,7 @@ export default function ContactsPage() {
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-3.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -280,7 +276,7 @@ export default function ContactsPage() {
             )}
           </div>
           {searchTerm && searchTerm !== debouncedSearch && (
-            <p className="text-sm text-gray-500 mt-2">Searching...</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Searching...</p>
           )}
         </div>
 
@@ -307,14 +303,14 @@ export default function ContactsPage() {
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
         ) : filteredContacts.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg shadow-md">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+            <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
             {debouncedSearch ? (
               <>
-                <h3 className="mt-2 text-lg font-medium text-gray-900">No contacts found</h3>
-                <p className="mt-1 text-sm text-gray-500">
+                <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-gray-100">No contacts found</h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   No contacts match your search for &quot;{debouncedSearch}&quot;. Try a different search term.
                 </p>
                 <div className="mt-6">
@@ -325,8 +321,8 @@ export default function ContactsPage() {
               </>
             ) : (
               <>
-                <h3 className="mt-2 text-lg font-medium text-gray-900">No contacts</h3>
-                <p className="mt-1 text-sm text-gray-500">Get started by creating a new contact.</p>
+                <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-gray-100">No contacts</h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new contact.</p>
                 <div className="mt-6">
                   <Button onClick={() => setIsCreateModalOpen(true)}>
                     Add Contact
@@ -395,7 +391,7 @@ export default function ContactsPage() {
           title="Delete Contact"
         >
           <div className="space-y-4">
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Are you sure you want to delete <strong>{selectedContact?.name}</strong>? This action cannot be undone.
             </p>
             <div className="flex space-x-3">
@@ -423,6 +419,5 @@ export default function ContactsPage() {
           </div>
         </Modal>
       </div>
-    </Layout>
   );
 }

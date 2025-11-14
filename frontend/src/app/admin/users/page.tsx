@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Layout } from '@/components/layout/Layout';
 import { Button, Modal, Alert, Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { UserForm } from '@/components/auth/UserForm';
 import { authApi } from '@/lib/api/auth';
@@ -42,24 +41,21 @@ export default function AdminUsersPage() {
 
   if (authLoading || !isAuthenticated || user?.role_id !== 1) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">Loading...</p>
-          </div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout>
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-            <p className="text-gray-600 mt-1">Create and manage users</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">User Management</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">Create and manage users</p>
           </div>
           <Button onClick={() => setIsCreateModalOpen(true)}>Create New User</Button>
         </div>
@@ -82,17 +78,17 @@ export default function AdminUsersPage() {
               <CardTitle>Admin Users</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
                 Admin users have elevated privileges and can:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-sm text-gray-600">
+              <ul className="list-disc list-inside space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <li>View all contacts from all users</li>
                 <li>Create new admin users</li>
                 <li>Create regular users</li>
                 <li>Edit and delete their own contacts</li>
               </ul>
-              <div className="mt-6 pt-6 border-t">
-                <p className="text-sm text-gray-500">
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   Only admins can create other admin users. This ensures proper access control.
                 </p>
               </div>
@@ -104,17 +100,17 @@ export default function AdminUsersPage() {
               <CardTitle>Regular Users</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
                 Regular users have standard access and can:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-sm text-gray-600">
+              <ul className="list-disc list-inside space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <li>View only their own contacts</li>
                 <li>Create new contacts</li>
                 <li>Edit their own contacts</li>
                 <li>Delete their own contacts</li>
               </ul>
-              <div className="mt-6 pt-6 border-t">
-                <p className="text-sm text-gray-500">
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   Regular users are created by default during public registration.
                 </p>
               </div>
@@ -127,7 +123,7 @@ export default function AdminUsersPage() {
             <CardTitle>Security Guidelines</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3 text-sm text-gray-600">
+            <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
               <div className="flex items-start">
                 <svg
                   className="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5"
@@ -203,6 +199,5 @@ export default function AdminUsersPage() {
           />
         </Modal>
       </div>
-    </Layout>
   );
 }
