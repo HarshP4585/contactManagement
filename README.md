@@ -79,3 +79,18 @@ docker-compose logs -f
 
 - [Backend API Documentation](./backend/README.md)
 - [Frontend Documentation](./frontend/README.md)
+
+## Screenshots
+
+### Home page
+<img width="1470" height="878" alt="image" src="https://github.com/user-attachments/assets/febed13f-987c-48c8-87f0-3a5cc95151ff" />
+
+### Admin home page
+<img width="2940" height="1758" alt="image" src="https://github.com/user-attachments/assets/b868b033-3ab9-4038-b539-584ace7362fb" />
+
+### User home page
+<img width="1470" height="877" alt="image" src="https://github.com/user-attachments/assets/7b447678-2487-4495-b3a5-99ddb38f8350" />
+
+### Theme toggle
+<img width="1470" height="877" alt="image" src="https://github.com/user-attachments/assets/dc9bafa1-92a0-4215-85d6-0e4d9e4938d0" />
+
