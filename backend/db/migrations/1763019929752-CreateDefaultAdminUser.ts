@@ -21,10 +21,6 @@ export class CreateDefaultAdminUser1763019929000 implements MigrationInterface {
         ['Admin', 'User', 'admin@admin.com', hashedPassword, 1, true]
       );
 
-      console.log('✅ Default admin user created:');
-      console.log('   Email: admin@admin.com');
-      console.log('   Password: admin123');
-      console.log('   ⚠️  Please change the password after first login!');
     } else {
       console.log('ℹ️  Default admin user already exists, skipping creation.');
     }
