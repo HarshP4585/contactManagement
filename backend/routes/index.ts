@@ -10,11 +10,12 @@ router.get('/', (req, res) => {
     success: true,
     message: 'Contact Management API',
     version: '1.0.0',
+    documentation: '/api-docs',
     endpoints: {
       auth: {
         register: 'POST /api/auth/register',
         login: 'POST /api/auth/login',
-        profile: 'GET /api/auth/profile (requires auth)',
+        refresh: 'POST /api/auth/refresh',
       },
       contacts: {
         create: 'POST /api/contacts (requires auth)',

@@ -71,7 +71,7 @@ app.get('/', (req: Request, res: Response) => {
       auth: {
         register: 'POST /api/auth/register',
         login: 'POST /api/auth/login',
-        profile: 'GET /api/auth/profile (requires auth)',
+        refresh: 'POST /api/auth/refresh',
       },
       contacts: {
         create: 'POST /api/contacts (requires auth)',

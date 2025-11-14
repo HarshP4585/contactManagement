@@ -74,22 +74,4 @@ router.post('/login', AuthController.login);
  */
 router.post('/refresh', AuthController.refreshToken);
 
-/**
- * @swagger
- * /api/auth/profile:
- *   get:
- *     summary: Get user profile
- *     tags: [Auth]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: User profile
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- */
-router.get('/profile', AuthMiddleware.authenticate, AuthController.getProfile);
-
 export default router;

@@ -37,14 +37,6 @@ export const authApi = {
     throw new Error(response.data.message || 'User creation failed');
   },
 
-  async getProfile(): Promise<User> {
-    const response = await apiClient.get<ApiResponse<User>>('/auth/profile');
-    if (response.data.success && response.data.data) {
-      return response.data.data;
-    }
-    throw new Error(response.data.message || 'Failed to fetch profile');
-  },
-
   async refreshToken(): Promise<string> {
     const response = await apiClient.post<ApiResponse<{ access_token: string }>>('/auth/refresh');
     if (response.data.success && response.data.data?.access_token) {
